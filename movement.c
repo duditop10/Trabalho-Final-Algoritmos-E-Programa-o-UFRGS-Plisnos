@@ -1,0 +1,1 @@
+#define MAX_VELOCITY 3.7
