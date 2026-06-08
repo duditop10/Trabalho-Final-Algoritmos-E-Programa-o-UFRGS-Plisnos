@@ -32,7 +32,7 @@ int CheckCollisionVec2Vec2(Vector2 posSelf, Vector2 sizeSelf, Vector2 posOther, 
 
 }
 
-int CheckCollisionVec2MatGround(Vector2 posSelf, Vector2 sizeSelf, int matPosI, int matPosJ){
+int CheckCollisionVec2Mat(Vector2 posSelf, Vector2 sizeSelf, int matPosI, int matPosJ){
     Vector2 matPosVec2=MatrixPosToVec2(matPosI, matPosJ);
     return CheckCollisionVec2Vec2(posSelf,sizeSelf,matPosVec2,(Vector2){SQR_SIZ, SQR_SIZ});
 }
@@ -43,19 +43,19 @@ int CheckFutureCollisionVec2Vec2(Vector2 posSelf, Vector2 sizeSelf, Vector2 velo
     return CheckCollisionVec2Vec2(futureSelfPos, sizeSelf, futureOtherPos, sizeOther);
 }
 
-int CheckFutureCollisionVec2MatGround(Vector2 posSelf, Vector2 sizeSelf, Vector2 velocitySelf, int matPosI, int matPosJ){
+int CheckFutureCollisionVec2Mat(Vector2 posSelf, Vector2 sizeSelf, Vector2 velocitySelf, int matPosI, int matPosJ){
     Vector2 futureSelfPos={posSelf.x+velocitySelf.x, posSelf.y+velocitySelf.y};
-    return CheckCollisionVec2MatGround(futureSelfPos, sizeSelf, matPosI, matPosJ);
+    return CheckCollisionVec2Mat(futureSelfPos, sizeSelf, matPosI, matPosJ);
 }
 
 int PlayerIsOnGround(Player p, int mat[MAT_HEIGHT][MAT_WIDTH]){
     int i=ScreenYToMatrixLine(p.position.y);
     int j=ScreenXToMatrixColumn(p.position.x);
     
-    int cond1 = (i >= 0 && i < MAT_HEIGHT && j >= 0 && j < MAT_WIDTH) && (CheckCollisionVec2MatGround(p.position,p.size,i,j) && mat[i][j]==1);
-    int cond2 = (i+1 >= 0 && i+1 < MAT_HEIGHT && j >= 0 && j < MAT_WIDTH) && (CheckCollisionVec2MatGround(p.position,p.size,i+1,j) && mat[i+1][j]==1);
-    int cond3 = (i >= 0 && i < MAT_HEIGHT && j+1 >= 0 && j+1 < MAT_WIDTH) && (CheckCollisionVec2MatGround(p.position,p.size,i,j+1) && mat[i][j+1]==1);
-    int cond4 = (i+1 >= 0 && i+1 < MAT_HEIGHT && j+1 >= 0 && j+1 < MAT_WIDTH) && (CheckCollisionVec2MatGround(p.position,p.size,i+1,j+1) && mat[i+1][j+1]==1);
+    int cond1 = (i >= 0 && i < MAT_HEIGHT && j >= 0 && j < MAT_WIDTH) && (CheckCollisionVec2Mat(p.position,p.size,i,j) && mat[i][j]==1);
+    int cond2 = (i+1 >= 0 && i+1 < MAT_HEIGHT && j >= 0 && j < MAT_WIDTH) && (CheckCollisionVec2Mat(p.position,p.size,i+1,j) && mat[i+1][j]==1);
+    int cond3 = (i >= 0 && i < MAT_HEIGHT && j+1 >= 0 && j+1 < MAT_WIDTH) && (CheckCollisionVec2Mat(p.position,p.size,i,j+1) && mat[i][j+1]==1);
+    int cond4 = (i+1 >= 0 && i+1 < MAT_HEIGHT && j+1 >= 0 && j+1 < MAT_WIDTH) && (CheckCollisionVec2Mat(p.position,p.size,i+1,j+1) && mat[i+1][j+1]==1);
     
     return (cond1 || cond2 || cond3 || cond4);
 }

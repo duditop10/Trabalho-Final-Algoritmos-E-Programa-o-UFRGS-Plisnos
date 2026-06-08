@@ -8,11 +8,11 @@ Vector2 MatrixPosToVec2(int i, int j);
 
 
 int CheckCollisionVec2Vec2(Vector2 posSelf, Vector2 sizeSelf, Vector2 posOther, Vector2 sizeOther);
-int CheckCollisionVec2MatGround(Vector2 posSelf, Vector2 sizeSelf, int matPosI, int matPosJ);
+int CheckCollisionVec2Mat(Vector2 posSelf, Vector2 sizeSelf, int matPosI, int matPosJ);
 
 
 int CheckFutureCollisionVec2Vec2(Vector2 posSelf, Vector2 sizeSelf, Vector2 velocitySelf, Vector2 posOther, Vector2 velocityOther, Vector2 sizeOther);
-int CheckFutureCollisionVec2MatGround(Vector2 posSelf, Vector2 sizeSelf, Vector2 velocitySelf, int matPosI, int matPosJ);
+int CheckFutureCollisionVec2Mat(Vector2 posSelf, Vector2 sizeSelf, Vector2 velocitySelf, int matPosI, int matPosJ);
 
 int PlayerIsOnGround(Player p, int mat[MAT_HEIGHT][MAT_WIDTH]);
 int PlayerWillBeOnGround(Player *p, int mat[MAT_HEIGHT][MAT_WIDTH]);
