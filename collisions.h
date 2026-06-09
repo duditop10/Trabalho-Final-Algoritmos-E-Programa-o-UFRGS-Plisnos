@@ -26,5 +26,9 @@ int GetMatrixValueSafe(int [MAT_HEIGHT][MAT_WIDTH], int, int);
 int GroundBelow(Vector2 pos, Vector2 size, int mat[MAT_HEIGHT][MAT_WIDTH]);
 int WillThereBeGroundBelow(Vector2 pos, Vector2 size, Vector2 velocity, int mat[MAT_HEIGHT][MAT_WIDTH]);
 
+int PlayerEnemyCollision(Player, EnemyManager *);
+int PlayerEnemyFutureCollision(Player, EnemyManager *);
+int PlayerStompEnemy(Player p, EnemyManager *e, int* index);
+
 int OutOfBoundsCheck(Vector2 pos, Vector2 size);
 int PlayerIsOnStair(Player *, int [MAT_HEIGHT][MAT_WIDTH]);

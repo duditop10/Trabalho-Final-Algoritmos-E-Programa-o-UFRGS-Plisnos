@@ -21,6 +21,7 @@ typedef struct Enemy{
     Vector2 size;
     int canClimbLadders;
     int isClimbing;
+    int climbCooldown;  // frames restantes antes de poder escalar novamente
 } Enemy;
 
 typedef struct EnemyManager{

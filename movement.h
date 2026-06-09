@@ -16,4 +16,4 @@ void HorizontalMovement(Player *, int [MAT_HEIGHT][MAT_WIDTH]);
 void Damping(Player *, int [MAT_HEIGHT][MAT_WIDTH]);
 void Jump(Player *);
 void OnStairMove(Player *, int);
-void Move(Player *, int [MAT_HEIGHT][MAT_WIDTH]);
+void Move(Player *, int [MAT_HEIGHT][MAT_WIDTH], EnemyManager *);

@@ -3,6 +3,7 @@
 #include "structs.h"
 #include "movement.h"
 #include "global-defs.h"
+#include "enemies.h"
 
 
 
@@ -134,7 +135,7 @@ void OnStairMove(Player *p, int flag){
 
 }
 
-void Move(Player *p, int mat[MAT_HEIGHT][MAT_WIDTH]){
+void Move(Player *p, int mat[MAT_HEIGHT][MAT_WIDTH], EnemyManager *e){
 
     HorizontalMovement(p, mat);
     if(PlayerIsOnGround(*p,mat)||GroundBelow(p->position, p->size, mat)){
@@ -148,7 +149,14 @@ void Move(Player *p, int mat[MAT_HEIGHT][MAT_WIDTH]){
     if(PlayerWillBeOnGround(*p, mat)){
         Damping(p, mat);
     }
+    int i;
+    if(PlayerStompEnemy(*p, e, &i)){
+        KillEnemy(e, i);
+    }
     p->velocity.x+=p->acceleration.x;
     p->position.x+=p->velocity.x;
     p->position.y+=p->velocity.y;
+    if(PlayerEnemyCollision(*p, e)){
+        p->lives--;
+    }
 }

@@ -5,7 +5,8 @@
 #include "draw-map.h"
 #include "movement.h"
 #include "enemies.h"
-
+#include <time.h> 
+#include <stdio.h>
 
 int main(){
     int mat[MAT_HEIGHT][MAT_WIDTH]={0};
@@ -14,6 +15,8 @@ int main(){
     p.lives=3;
 
     InitWindow(SCR_WIDTH, SCR_HEIGHT, "Donkey Kong");
+
+    SetRandomSeed((unsigned int)time(NULL)); 
 
     LoadMapToMatrix("mapa1.txt", mat, &enemyMan, &p);
     LoadTextures();
@@ -24,8 +27,9 @@ int main(){
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {   
         SetGravity(&p, 9.8/60);
-        Move(&p, mat);
+        Move(&p, mat, &enemyMan);
         UpdateEnemies(&enemyMan, mat);
+        printf("%d",p.lives);
         
         BeginDrawing();
 

@@ -3,11 +3,6 @@
 #include "raylib.h"
 #include <stdlib.h>
 
-#include "enemies.h"
-#include "collisions.h"
-#include "raylib.h"
-#include <stdlib.h>
-
 void KillEnemy(EnemyManager *e, int index) {
     if (index < 0 || index >= e->quantEnemies) return;
     
@@ -17,6 +12,9 @@ void KillEnemy(EnemyManager *e, int index) {
 }
 
 void MoveEnemy(Enemy *e, int mat[MAT_HEIGHT][MAT_WIDTH]) {
+
+    // Decrementa o cooldown de escalada a cada frame
+    if (e->climbCooldown > 0) e->climbCooldown--;
 
     if (e->isClimbing) {
         e->position.y += e->velocity.y;
@@ -29,30 +27,32 @@ void MoveEnemy(Enemy *e, int mat[MAT_HEIGHT][MAT_WIDTH]) {
             (e->velocity.y > 0 && currentTile == 3)) {  // Chegou na base
             
             e->velocity.y = 0;
-            e->velocity.x = 2.0f; 
+            e->velocity.x = 2.0f;
             int i = ScreenYToMatrixLine(e->position.y + e->size.y / 2);
 
-            Vector2 posSnap = MatrixPosToVec2(i + 1, 0); 
-            e->position.y = posSnap.y - e->size.y; 
+            Vector2 posSnap = MatrixPosToVec2(i + 1, 0);
+            e->position.y = posSnap.y - e->size.y;
 
             e->isClimbing = 0;
-
+            // FIX #2: cooldown impede re-escalada imediata após o snap,
+            // pois o centro do inimigo ainda está dentro do tile S/D.
+            e->climbCooldown = 90; // ~1.5 segundos a 60 FPS
         }
-        return; 
+        return;
     }
-
 
     int i = ScreenYToMatrixLine(e->position.y + e->size.y / 2);
     int j = ScreenXToMatrixColumn(e->position.x + e->size.x / 2);
     int currentTile = GetMatrixValueSafe(mat, i, j);
 
-    if (e->canClimbLadders) {
-        if (currentTile == 3 && GetRandomValue(0, 100) < 50) { // Chance reduzida para teste
+    // FIX #2: só tenta escalar se o cooldown já zerou
+    if (e->canClimbLadders && e->climbCooldown == 0) {
+        if (currentTile == 3 && GetRandomValue(0, 100) < 1) {
             e->velocity.y = -2.0f;
             e->velocity.x = 0;
             e->isClimbing = 1;
             return;
-        } else if (currentTile == 4 && GetRandomValue(0, 100) < 50) {
+        } else if (currentTile == 4 && GetRandomValue(0, 100) < 1) {
             e->velocity.y = 2.0f;
             e->velocity.x = 0;
             e->isClimbing = 1;
@@ -61,11 +61,23 @@ void MoveEnemy(Enemy *e, int mat[MAT_HEIGHT][MAT_WIDTH]) {
     }
 
     if (e->velocity.y == 0) e->velocity.y += 0.2f;
-
     if (e->velocity.x == 0) e->velocity.x = 2.0f;
-    if (!WillThereBeGroundBelow(e->position, e->size, (Vector2){e->velocity.x * 10, 0}, mat)) {
-        e->velocity.x *= -1;
+
+    // FIX #1: verificação de borda por tile direto no nível dos pés.
+    // WillThereBeGroundBelow só aceitava tile 1 (piso); tiles de escada (2, 3)
+    // embutidos no andar faziam o inimigo virar antes da hora.
+    {
+        float futureX   = e->position.x + e->size.x / 2 + e->velocity.x * 10;
+        int   feetRow   = ScreenYToMatrixLine(e->position.y + e->size.y + 1);
+        int   futureCol = ScreenXToMatrixColumn(futureX);
+        int   tileBelow = GetMatrixValueSafe(mat, feetRow, futureCol);
+
+        // Piso (1), escada (2) e base da escada (3) são todos sólidos para caminhar
+        if (tileBelow != 1 && tileBelow != 2 && tileBelow != 3) {
+            e->velocity.x *= -1;
+        }
     }
+
     e->position.x += e->velocity.x;
 
     if (PlayerIsOnGround((Player){e->position, {0}, {0}, e->size, 0}, mat)) {

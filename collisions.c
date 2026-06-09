@@ -43,23 +43,6 @@ Rectangle GetPlayerHitbox(Player p) {
     };
 }
 
-int GetMatrixValueSafe(int mat[MAT_HEIGHT][MAT_WIDTH], int row, int col) {
-    if (row >= 0 && row < MAT_HEIGHT && col >= 0 && col < MAT_WIDTH) {
-        return mat[row][col];
-    }
-    return 0; // Retorna vazio se estiver fora dos limites da tela
-}
-
-
-//toda parte de diminuição da colisão eu usei IA para (o player nn conseguia passar pelo vão da escada)
-Rectangle GetPlayerHitbox(Player p) {
-    return (Rectangle){
-        p.position.x + COLLISION_OFFSET,
-        p.position.y,
-        p.size.x - (2 * COLLISION_OFFSET),
-        p.size.y
-    };
-}
 
 int GetMatrixValueSafe(int mat[MAT_HEIGHT][MAT_WIDTH], int row, int col) {
     if (row >= 0 && row < MAT_HEIGHT && col >= 0 && col < MAT_WIDTH) {
@@ -95,10 +78,10 @@ int PlayerIsOnGround(Player p, int mat[MAT_HEIGHT][MAT_WIDTH]){
     int i = ScreenYToMatrixLine(pos.y);
     int j = ScreenXToMatrixColumn(pos.x);
     
-    int cond1 = (i >= 0 && i < MAT_HEIGHT && j >= 0 && j < MAT_WIDTH) && (CheckCollisionVec2MatGround(pos,size,i,j) && mat[i][j]==1);
-    int cond2 = (i+1 >= 0 && i+1 < MAT_HEIGHT && j >= 0 && j < MAT_WIDTH) && (CheckCollisionVec2MatGround(pos,size,i+1,j) && mat[i+1][j]==1);
-    int cond3 = (i >= 0 && i < MAT_HEIGHT && j+1 >= 0 && j+1 < MAT_WIDTH) && (CheckCollisionVec2MatGround(pos,size,i,j+1) && mat[i][j+1]==1);
-    int cond4 = (i+1 >= 0 && i+1 < MAT_HEIGHT && j+1 >= 0 && j+1 < MAT_WIDTH) && (CheckCollisionVec2MatGround(pos,size,i+1,j+1) && mat[i+1][j+1]==1);
+    int cond1 = (i >= 0 && i < MAT_HEIGHT && j >= 0 && j < MAT_WIDTH) && (CheckCollisionVec2Mat(pos,size,i,j) && mat[i][j]==1);
+    int cond2 = (i+1 >= 0 && i+1 < MAT_HEIGHT && j >= 0 && j < MAT_WIDTH) && (CheckCollisionVec2Mat(pos,size,i+1,j) && mat[i+1][j]==1);
+    int cond3 = (i >= 0 && i < MAT_HEIGHT && j+1 >= 0 && j+1 < MAT_WIDTH) && (CheckCollisionVec2Mat(pos,size,i,j+1) && mat[i][j+1]==1);
+    int cond4 = (i+1 >= 0 && i+1 < MAT_HEIGHT && j+1 >= 0 && j+1 < MAT_WIDTH) && (CheckCollisionVec2Mat(pos,size,i+1,j+1) && mat[i+1][j+1]==1);
     
     return (cond1 || cond2 || cond3 || cond4);
 }
