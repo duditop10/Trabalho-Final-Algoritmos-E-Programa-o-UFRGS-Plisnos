@@ -1,3 +1,5 @@
+#pragma once
+
 #include "raylib.h"
 #include "global-defs.h"
 
@@ -18,9 +20,10 @@ typedef struct Enemy{
     Vector2 acceleration;
     Vector2 size;
     int canClimbLadders;
+    int isClimbing;
 } Enemy;
 
 typedef struct EnemyManager{
-    Enemy enemies[MAT_HEIGHT*MAT_WIDTH];
+    Enemy enemies[MAT_HEIGHT*MAT_WIDTH+1];
     int quantEnemies;
 } EnemyManager;

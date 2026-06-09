@@ -1,8 +1,11 @@
+#pragma once
+
 #define SCR_WIDTH 600
 #define SCR_HEIGHT 800
 #define MAT_WIDTH 30
 #define MAT_HEIGHT 30
-#define SQR_SIZ SCR_WIDTH/MAT_WIDTH
+#define SQR_SIZ (SCR_WIDTH/MAT_WIDTH)
 #define COLOR_PLAYER RED
 #define COLOR_ENEMY ORANGE
 #define COLOR_GOAL GREEN
+#define COLLISION_OFFSET 3
