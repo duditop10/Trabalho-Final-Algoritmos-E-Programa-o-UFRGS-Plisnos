@@ -50,7 +50,25 @@ int GetMatrixValueSafe(int mat[MAT_HEIGHT][MAT_WIDTH], int row, int col) {
     return 0; // Retorna vazio se estiver fora dos limites da tela
 }
 
-int CheckCollisionVec2MatGround(Vector2 posSelf, Vector2 sizeSelf, int matPosI, int matPosJ){
+
+//toda parte de diminuição da colisão eu usei IA para (o player nn conseguia passar pelo vão da escada)
+Rectangle GetPlayerHitbox(Player p) {
+    return (Rectangle){
+        p.position.x + COLLISION_OFFSET,
+        p.position.y,
+        p.size.x - (2 * COLLISION_OFFSET),
+        p.size.y
+    };
+}
+
+int GetMatrixValueSafe(int mat[MAT_HEIGHT][MAT_WIDTH], int row, int col) {
+    if (row >= 0 && row < MAT_HEIGHT && col >= 0 && col < MAT_WIDTH) {
+        return mat[row][col];
+    }
+    return 0; // Retorna vazio se estiver fora dos limites da tela
+}
+
+int CheckCollisionVec2Mat(Vector2 posSelf, Vector2 sizeSelf, int matPosI, int matPosJ){
     Vector2 matPosVec2=MatrixPosToVec2(matPosI, matPosJ);
     return CheckCollisionVec2Vec2(posSelf,sizeSelf,matPosVec2,(Vector2){SQR_SIZ, SQR_SIZ});
 }
@@ -61,9 +79,9 @@ int CheckFutureCollisionVec2Vec2(Vector2 posSelf, Vector2 sizeSelf, Vector2 velo
     return CheckCollisionVec2Vec2(futureSelfPos, sizeSelf, futureOtherPos, sizeOther);
 }
 
-int CheckFutureCollisionVec2MatGround(Vector2 posSelf, Vector2 sizeSelf, Vector2 velocitySelf, int matPosI, int matPosJ){
+int CheckFutureCollisionVec2Mat(Vector2 posSelf, Vector2 sizeSelf, Vector2 velocitySelf, int matPosI, int matPosJ){
     Vector2 futureSelfPos={posSelf.x+velocitySelf.x, posSelf.y+velocitySelf.y};
-    return CheckCollisionVec2MatGround(futureSelfPos, sizeSelf, matPosI, matPosJ);
+    return CheckCollisionVec2Mat(futureSelfPos, sizeSelf, matPosI, matPosJ);
 }
 
 int PlayerIsOnGround(Player p, int mat[MAT_HEIGHT][MAT_WIDTH]){
