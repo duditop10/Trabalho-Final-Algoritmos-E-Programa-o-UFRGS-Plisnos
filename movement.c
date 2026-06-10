@@ -4,7 +4,7 @@
 #include "movement.h"
 #include "global-defs.h"
 #include "enemies.h"
-
+#include <stdio.h>
 
 
 void SetGravity(Player *p, float gravity){
@@ -50,54 +50,56 @@ void HorizontalMovement(Player *p, int mat[MAT_HEIGHT][MAT_WIDTH]){
 }
 
 void Damping(Player *p, int mat[MAT_HEIGHT][MAT_WIDTH]){
-    // --- 1. RESOLUÇÃO DO EIXO Y (Vertical) ---
+
+    int stairFlag = PlayerIsOnStair(p, mat);
+
     Player futureY = *p;
     futureY.position.y += p->velocity.y;
 
-    // Se bater no chão ou no teto
-    if (PlayerIsOnGround(futureY, mat)) {
-        if (p->velocity.y > 0) { 
-            // Caindo (bateu no chão): descobre a linha da matriz onde o PÉ bateu
-            int blockI = ScreenYToMatrixLine(futureY.position.y + p->size.y);
-            float blockTopY = MatrixPosToVec2(blockI, 0).y;
-            
-            // Gruda o jogador exatamente em cima da superfície do bloco
-            p->position.y = blockTopY - p->size.y;
-        } 
-        else if (p->velocity.y < 0) { 
-            // Subindo (bateu no teto): descobre a linha da matriz onde a CABEÇA bateu
-            int blockI = ScreenYToMatrixLine(futureY.position.y);
-            float blockBottomY = MatrixPosToVec2(blockI, 0).y + SQR_SIZ;
-            
-            // Gruda o jogador exatamente embaixo do bloco
-            p->position.y = blockBottomY;
+    if(!stairFlag){
+        // Se bater no chão ou no teto
+        if (PlayerIsOnGround(futureY, mat)) {
+            if (p->velocity.y > 0) { 
+
+                int blockI = ScreenYToMatrixLine(futureY.position.y + p->size.y);
+                float blockTopY = MatrixPosToVec2(blockI, 0).y;
+                
+
+                p->position.y = blockTopY - p->size.y;
+            } 
+            else if (p->velocity.y < 0) { 
+
+                int blockI = ScreenYToMatrixLine(futureY.position.y);
+                float blockBottomY = MatrixPosToVec2(blockI, 0).y + SQR_SIZ;
+                
+
+                p->position.y = blockBottomY;
+            }
+            p->velocity.y = 0; 
         }
-        p->velocity.y = 0; // Bateu, então zera SOMENTE a velocidade vertical
     }
 
-    // --- 2. RESOLUÇÃO DO EIXO X (Horizontal) ---
-    // Cria um futuro X partindo da posição Y já corrigida do passo anterior
     Player futureX = *p; 
     futureX.position.x += p->velocity.x;
 
     // Se bater na parede
     if (PlayerIsOnGround(futureX, mat)) {
         if (p->velocity.x > 0) { 
-            // Indo para a direita: pega a coluna da matriz onde o LADO DIREITO bateu
+
             int blockJ = ScreenXToMatrixColumn(futureX.position.x + p->size.x);
             float blockLeftX = MatrixPosToVec2(0, blockJ).x;
             
             p->position.x = blockLeftX - p->size.x;
         } 
         else if (p->velocity.x < 0) { 
-            // Indo para a esquerda: pega a coluna da matriz onde o LADO ESQUERDO bateu
+
             int blockJ = ScreenXToMatrixColumn(futureX.position.x);
             float blockRightX = MatrixPosToVec2(0, blockJ).x + SQR_SIZ;
             
             p->position.x = blockRightX;
         }
-        p->velocity.x = 0; // Bateu na parede, zera a velocidade horizontal
-        p->acceleration.x = 0; // Evita que a física continue forçando aceleração contra o bloco
+        p->velocity.x = 0;
+        p->acceleration.x = 0;
     }
 }
 
@@ -137,26 +139,34 @@ void OnStairMove(Player *p, int flag){
 
 void Move(Player *p, int mat[MAT_HEIGHT][MAT_WIDTH], EnemyManager *e){
 
+    int stairFlag=PlayerIsOnStair(p,mat);
     HorizontalMovement(p, mat);
     if(PlayerIsOnGround(*p,mat)||GroundBelow(p->position, p->size, mat)){
         Jump(p);
     }
-    int stairFlag=PlayerIsOnStair(p,mat);
     OnStairMove(p,stairFlag);
     if(!stairFlag){
         ApplyGravity(p);
     }
+    int i;
     if(PlayerWillBeOnGround(*p, mat)){
         Damping(p, mat);
     }
-    int i;
-    if(PlayerStompEnemy(*p, e, &i)){
-        KillEnemy(e, i);
-    }
+    
     p->velocity.x+=p->acceleration.x;
     p->position.x+=p->velocity.x;
     p->position.y+=p->velocity.y;
+    if(PlayerStompEnemy(*p, e, &i)){
+        printf("Stomp\n");
+        p->invincibilityFrames=10;
+        KillEnemy(e, i);
+        p->enemyScore+=100;
+    }
     if(PlayerEnemyCollision(*p, e)){
-        p->lives--;
+        if(p->invincibilityFrames<=0){
+            p->lives--;
+            p->invincibilityFrames=60;
+        }
+        
     }
 }

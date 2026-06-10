@@ -11,6 +11,10 @@ typedef struct Player{
     Vector2 acceleration; //componente x é aceleração horizontal, y é vertical (em pixels/frame²)
     Vector2 size; //usado para calculos de colisão (e desenho)
     int lives;
+    int invincibilityFrames;
+    unsigned int enemyScore;
+    unsigned int timeScore;
+    unsigned int score;
 } Player;
 
 typedef struct Enemy{
