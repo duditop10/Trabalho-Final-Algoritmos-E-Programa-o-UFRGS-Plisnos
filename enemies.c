@@ -13,9 +13,10 @@ void KillEnemy(EnemyManager *e, int index) {
 
 void MoveEnemy(Enemy *e, int mat[MAT_HEIGHT][MAT_WIDTH]) {
 
-    // Decrementa o cooldown de escalada a cada frame
-    if (e->climbCooldown > 0) e->climbCooldown--;
 
+    if (e->climbCooldown > 0){
+        e->climbCooldown--;
+    }
     if (e->isClimbing) {
         e->position.y += e->velocity.y;
 
@@ -34,9 +35,8 @@ void MoveEnemy(Enemy *e, int mat[MAT_HEIGHT][MAT_WIDTH]) {
             e->position.y = posSnap.y - e->size.y;
 
             e->isClimbing = 0;
-            // FIX #2: cooldown impede re-escalada imediata após o snap,
-            // pois o centro do inimigo ainda está dentro do tile S/D.
-            e->climbCooldown = 90; // ~1.5 segundos a 60 FPS
+     
+            e->climbCooldown = 90;
         }
         return;
     }
@@ -45,14 +45,14 @@ void MoveEnemy(Enemy *e, int mat[MAT_HEIGHT][MAT_WIDTH]) {
     int j = ScreenXToMatrixColumn(e->position.x + e->size.x / 2);
     int currentTile = GetMatrixValueSafe(mat, i, j);
 
-    // FIX #2: só tenta escalar se o cooldown já zerou
+    
     if (e->canClimbLadders && e->climbCooldown == 0) {
-        if (currentTile == 3 && GetRandomValue(0, 100) < 1) {
+        if (currentTile == 3 && GetRandomValue(0, 100) < CLIMBING_CHANCE) {
             e->velocity.y = -2.0f;
             e->velocity.x = 0;
             e->isClimbing = 1;
             return;
-        } else if (currentTile == 4 && GetRandomValue(0, 100) < 1) {
+        } else if (currentTile == 4 && GetRandomValue(0, 100) < CLIMBING_CHANCE) {
             e->velocity.y = 2.0f;
             e->velocity.x = 0;
             e->isClimbing = 1;
@@ -63,20 +63,17 @@ void MoveEnemy(Enemy *e, int mat[MAT_HEIGHT][MAT_WIDTH]) {
     if (e->velocity.y == 0) e->velocity.y += 0.2f;
     if (e->velocity.x == 0) e->velocity.x = 2.0f;
 
-    // FIX #1: verificação de borda por tile direto no nível dos pés.
-    // WillThereBeGroundBelow só aceitava tile 1 (piso); tiles de escada (2, 3)
-    // embutidos no andar faziam o inimigo virar antes da hora.
-    {
-        float futureX   = e->position.x + e->size.x / 2 + e->velocity.x * 10;
-        int   feetRow   = ScreenYToMatrixLine(e->position.y + e->size.y + 1);
-        int   futureCol = ScreenXToMatrixColumn(futureX);
-        int   tileBelow = GetMatrixValueSafe(mat, feetRow, futureCol);
 
-        // Piso (1), escada (2) e base da escada (3) são todos sólidos para caminhar
-        if (tileBelow != 1 && tileBelow != 2 && tileBelow != 3) {
-            e->velocity.x *= -1;
-        }
+    float futureX   = e->position.x + e->size.x / 2 + e->velocity.x * 10;
+    int   feetRow   = ScreenYToMatrixLine(e->position.y + e->size.y + 1);
+    int   futureCol = ScreenXToMatrixColumn(futureX);
+    int   tileBelow = GetMatrixValueSafe(mat, feetRow, futureCol);
+
+    // Piso (1), escada (2) e base da escada (3) são todos sólidos para caminhar
+    if (tileBelow != 1 && tileBelow != 2 && tileBelow != 3) {
+        e->velocity.x *= -1;
     }
+
 
     e->position.x += e->velocity.x;
 

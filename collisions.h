@@ -32,3 +32,5 @@ int PlayerStompEnemy(Player p, EnemyManager *e, int* index);
 
 int OutOfBoundsCheck(Vector2 pos, Vector2 size);
 int PlayerIsOnStair(Player *, int [MAT_HEIGHT][MAT_WIDTH]);
+
+int PlayerIsOnFlag(Player, int [MAT_HEIGHT][MAT_WIDTH]);

@@ -14,6 +14,7 @@ typedef struct Player{
     int invincibilityFrames;
     unsigned int enemyScore;
     unsigned int timeScore;
+    unsigned int livesScore;
     unsigned int score;
 } Player;
 

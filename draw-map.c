@@ -63,7 +63,7 @@ void LoadMapToMatrix(const char *filename, int mat[MAT_HEIGHT][MAT_WIDTH], Enemy
                     enemyMan->enemies[i].alive=1;
                     enemyMan->enemies[i].position=MatrixPosToVec2(y,x);
                     enemyMan->enemies[i].size=(Vector2){(float)SQR_SIZ,(float)SQR_SIZ};
-                    enemyMan->enemies[i].canClimbLadders=(GetRandomValue(0, 100) < 100); //20% das vezes, 80% não
+                    enemyMan->enemies[i].canClimbLadders=(GetRandomValue(0, 100) < CHANCE_FOR_CLIMBING_ENEMY);
                     i++;
                     break;
 
@@ -143,8 +143,12 @@ void DrawMap(Player p, EnemyManager enemyMan, int mat[MAT_HEIGHT][MAT_WIDTH]){
     /*
         DESENHA O PLAYER
     */
-    DrawRectangleV(p.position, p.size, COLOR_PLAYER);
-
+    if(p.invincibilityFrames%12>=6){
+        DrawRectangleV(p.position, p.size, GRAY);
+    }
+    else{
+        DrawRectangleV(p.position, p.size, COLOR_PLAYER);
+    }
 }
 
 

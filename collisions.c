@@ -99,7 +99,24 @@ int PlayerWillBeOnGround(Player p, int mat[MAT_HEIGHT][MAT_WIDTH]){
     return 0;
 }
 
+int PlayerIsOnFlag(Player p, int mat[MAT_HEIGHT][MAT_WIDTH]){
 
+    Rectangle hit = GetPlayerHitbox(p);
+    
+    // Converte de Rectangle para Vector2/Size para compatibilidade com sua função atual
+    Vector2 pos = {hit.x, hit.y};
+    Vector2 size = {hit.width, hit.height};
+
+    int i = ScreenYToMatrixLine(pos.y);
+    int j = ScreenXToMatrixColumn(pos.x);
+    
+    int cond1 = (i >= 0 && i < MAT_HEIGHT && j >= 0 && j < MAT_WIDTH) && (CheckCollisionVec2Mat(pos,size,i,j) && mat[i][j]==5);
+    int cond2 = (i+1 >= 0 && i+1 < MAT_HEIGHT && j >= 0 && j < MAT_WIDTH) && (CheckCollisionVec2Mat(pos,size,i+1,j) && mat[i+1][j]==5);
+    int cond3 = (i >= 0 && i < MAT_HEIGHT && j+1 >= 0 && j+1 < MAT_WIDTH) && (CheckCollisionVec2Mat(pos,size,i,j+1) && mat[i][j+1]==5);
+    int cond4 = (i+1 >= 0 && i+1 < MAT_HEIGHT && j+1 >= 0 && j+1 < MAT_WIDTH) && (CheckCollisionVec2Mat(pos,size,i+1,j+1) && mat[i+1][j+1]==5);
+    
+    return (cond1 || cond2 || cond3 || cond4);
+}
 
 int GroundBelow(Vector2 pos, Vector2 size, int mat[MAT_HEIGHT][MAT_WIDTH]){
     Player fakePlayer={0}; //acabei nn fazendo a função de forma genérica o suficiente, ignorar

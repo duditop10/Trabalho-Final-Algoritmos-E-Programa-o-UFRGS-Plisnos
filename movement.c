@@ -126,7 +126,7 @@ void OnStairMove(Player *p, int flag){
         moveDown=0;
     }
     else if(flag==3){
-        //nn sei direito o q fazer
+
     }
     //no caso da flag 4, nn fazer nada
 
@@ -158,14 +158,14 @@ void Move(Player *p, int mat[MAT_HEIGHT][MAT_WIDTH], EnemyManager *e){
     p->position.y+=p->velocity.y;
     if(PlayerStompEnemy(*p, e, &i)){
         printf("Stomp\n");
-        p->invincibilityFrames=10;
+        p->invincibilityFrames=1; //evita colisão imediata com inimigo após matar
         KillEnemy(e, i);
-        p->enemyScore+=100;
+        p->enemyScore+=BASE_ENEMY_SCORE;
     }
     if(PlayerEnemyCollision(*p, e)){
         if(p->invincibilityFrames<=0){
             p->lives--;
-            p->invincibilityFrames=60;
+            p->invincibilityFrames=INVINCIBILITY_FRAMES;
         }
         
     }
