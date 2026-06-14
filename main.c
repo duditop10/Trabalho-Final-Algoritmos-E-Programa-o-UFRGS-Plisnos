@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#define SAVE_FILE      "savegame.txt"
+#define SAVE_FILE "save.txt"
 #define LEVELS_PER_ROW 4
 
 
@@ -25,11 +25,11 @@ typedef enum GameState{
     GAME_FINISH
 }GameState;
 
-void LevelStart (char[], int[MAT_HEIGHT][MAT_WIDTH], EnemyManager *, Player *);
-int  LevelUpdate(time_t, time_t *, int[MAT_HEIGHT][MAT_WIDTH], EnemyManager *, Player *);
-void LevelEnd   (Player *);
+void LevelStart(char[], int[MAT_HEIGHT][MAT_WIDTH], EnemyManager *, Player *);
+int LevelUpdate(time_t, time_t *, int[MAT_HEIGHT][MAT_WIDTH], EnemyManager *, Player *);
+void LevelEnd(Player *);
 void WriteSaveData(void);
-void LoadSaveData (void);
+void LoadSaveData(void);
 
 typedef struct SaveData {
     int          lastLevelPlayed;
@@ -102,7 +102,8 @@ int main(){
  
     InitWindow(SCR_WIDTH, SCR_HEIGHT, "Donkey Kong");
     SetTargetFPS(60);
- 
+    SetExitKey(KEY_NULL);
+
     LoadSaveData();
     lastLevelPlayed = saveData.lastLevelPlayed;
     snprintf(filename, sizeof(filename), "mapa%d.txt", lastLevelPlayed);
@@ -444,7 +445,6 @@ int LevelUpdate(time_t initTime, time_t* timeElapsed, int mat[MAT_HEIGHT][MAT_WI
         p->lives=0;
     }
     UpdateEnemies(enemyMan, mat);
-    printf("Lives: %d\n", p->lives);
     
     BeginDrawing();
         ClearBackground(RAYWHITE);
@@ -489,6 +489,5 @@ void LevelEnd(Player* p){
     p->livesScore=p->lives*BASE_LIVE_SCORE;
 
     p->score=p->timeScore+p->enemyScore+p->livesScore;
-    
-    printf("%u|%u|%u|%u\n", p->timeScore, p->enemyScore, p->livesScore, p->score);    
+     
 }
